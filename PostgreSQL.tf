@@ -8,11 +8,14 @@ resource "azurerm_postgresql_flexible_server" "aj-postgreSQL-flex-abc" {
   name                = "aj-postgre-flex-abc"
   resource_group_name = azurerm_resource_group.aj-rg-abc.name
   location            = azurerm_resource_group.aj-rg-abc.location
+  delegated_subnet_id           = azurerm_subnet.subnet2.id
+  private_dns_zone_id           = azurerm_private_dns_zone.postgre_zone.id
   version             = "12" 
   storage_mb          = 32768 # 32GB
   administrator_login = "adminuser"
   administrator_password = random_password.password.result
   sku_name            = "GP_Standard_D4s_v3"
+  public_network_access_enabled = false
 
   identity {
     type = "UserAssigned"
@@ -28,7 +31,7 @@ resource "azurerm_postgresql_flexible_server" "aj-postgreSQL-flex-abc" {
 resource "azurerm_postgresql_flexible_server_configuration" "EntraID_auth_only" {
   name                = "EntraID_auth_only"
   server_id         = azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc.id
-  value               = "true"
+  value               = "on"
 }
 
 # Assign your user account as admin

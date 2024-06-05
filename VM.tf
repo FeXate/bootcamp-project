@@ -14,7 +14,7 @@ resource "azurerm_network_interface" "aj-nic1-abc" {
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = azurerm_virtual_network.aj-vnet1-abc.subnet.*.id[0]
+    subnet_id                     = azurerm_subnet.subnet1.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.aj-publicIP-abc.id
   }
