@@ -12,13 +12,12 @@ resource "azurerm_postgresql_flexible_server" "aj-postgreSQL-flex-abc" {
   private_dns_zone_id           = azurerm_private_dns_zone.postgre_zone.id
   version             = "12" 
   storage_mb          = 32768 # 32GB
-  administrator_login = "adminuser"
-  administrator_password = random_password.password.result
   sku_name            = "GP_Standard_D4s_v3"
   public_network_access_enabled = false
   
   authentication {
     active_directory_auth_enabled = true
+    password_auth_enabled = false
     tenant_id                     = data.azurerm_client_config.current.tenant_id
   }
 
@@ -37,14 +36,12 @@ resource "azurerm_user_assigned_identity" "user-id" {
   location            = azurerm_resource_group.aj-rg-abc.location
 }
 
-#resource "azurerm_postgresql_active_directory_administrator" "ADAdmin" {
-  #server_name         = azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc.name
-  #resource_group_name = azurerm_resource_group.aj-rg-abc.name
-  #login               = "sqladmin"
-  #tenant_id           = data.azurerm_client_config.current.tenant_id
-  #object_id           = data.azurerm_client_config.current.object_id
 
-  #depends_on = [
-    #azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc
-  #]
-#}
+/*resource "azurerm_postgresql_flexible_server_active_directory_administrator" "example" {
+  server_name         = azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc.name
+  resource_group_name = azurerm_resource_group.aj-rg-abc.name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  object_id           = data.azurerm_client_config.current.object_id
+  principal_name      = data.azuread_service_principal.service-principal.display_name
+  principal_type      = "ServicePrincipal"
+}*/

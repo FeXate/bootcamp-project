@@ -17,14 +17,17 @@ resource "azurerm_key_vault" "aj-KeyVault" {
 
     key_permissions = [
       "Get",
+      "List"
     ]
 
     secret_permissions = [
       "Get",
+      "List",
     ]
 
     storage_permissions = [
       "Get",
+      "List",
     ]
   }
 
