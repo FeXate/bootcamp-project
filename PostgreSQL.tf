@@ -16,6 +16,11 @@ resource "azurerm_postgresql_flexible_server" "aj-postgreSQL-flex-abc" {
   administrator_password = random_password.password.result
   sku_name            = "GP_Standard_D4s_v3"
   public_network_access_enabled = false
+  
+  authentication {
+    active_directory_auth_enabled = true
+    tenant_id                     = data.azurerm_client_config.current.tenant_id
+  }
 
   identity {
     type = "UserAssigned"
@@ -26,24 +31,20 @@ resource "azurerm_postgresql_flexible_server" "aj-postgreSQL-flex-abc" {
     azurerm_private_dns_zone_virtual_network_link.postgres_vnet_link
   ]
 }
-
-# Ensure Entra ID Authentication is enabled
-resource "azurerm_postgresql_flexible_server_configuration" "EntraID_auth_only" {
-  name                = "EntraID_auth_only"
-  server_id         = azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc.id
-  value               = "on"
-}
-
-# Assign your user account as admin
-resource "azurerm_role_assignment" "RBAC" {
-  scope                = azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc.id
-  role_definition_name = "Contributor"
-  principal_id         = data.azurerm_client_config.current.object_id
-}
-
-# Create User Assigned Managed Identity for PostgreSQL
 resource "azurerm_user_assigned_identity" "user-id" {
-  name                = "user-id"
+  name                = "user-identity"
   resource_group_name = azurerm_resource_group.aj-rg-abc.name
   location            = azurerm_resource_group.aj-rg-abc.location
 }
+
+#resource "azurerm_postgresql_active_directory_administrator" "ADAdmin" {
+  #server_name         = azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc.name
+  #resource_group_name = azurerm_resource_group.aj-rg-abc.name
+  #login               = "sqladmin"
+  #tenant_id           = data.azurerm_client_config.current.tenant_id
+  #object_id           = data.azurerm_client_config.current.object_id
+
+  #depends_on = [
+    #azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc
+  #]
+#}

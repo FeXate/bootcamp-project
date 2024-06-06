@@ -3,6 +3,30 @@ resource "azurerm_network_security_group" "aj-nsg1-abc" {
   name                = "aj-nsg1-abc"
   location            = azurerm_resource_group.aj-rg-abc.location
   resource_group_name = azurerm_resource_group.aj-rg-abc.name
+  
+  security_rule {
+    name                       = "Allow-RDP"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3389"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Deny-All-Inbound"
+    priority                   = 200
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }
 
 #Creates a VNET using name, and location and destination resource group as variables, you have to configure your adress space and if you want to add subnets, you need to check for range

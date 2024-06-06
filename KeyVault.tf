@@ -27,4 +27,16 @@ resource "azurerm_key_vault" "aj-KeyVault" {
       "Get",
     ]
   }
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = azurerm_windows_virtual_machine.aj-vm1-abc.identity[0].principal_id
+
+    secret_permissions = [
+      "Set",
+      "Delete",
+      "Get",
+      "List",
+    ]
+  }
 }
