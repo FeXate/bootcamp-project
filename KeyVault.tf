@@ -1,5 +1,3 @@
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_key_vault" "aj-KeyVault" {
   name                        = "aj-KeyVault-abc1"
   location                    = azurerm_resource_group.aj-rg-abc.location
