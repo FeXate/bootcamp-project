@@ -6,10 +6,19 @@ resource "azurerm_key_vault" "aj-KeyVault" {
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_retention_days  = 7
   purge_protection_enabled    = false
-
+  enable_rbac_authorization   = true
   sku_name = "premium"
+}
+data "azurerm_subscription" "primary" {
+}
 
-  access_policy {
+resource "azurerm_role_assignment" "rbac" {
+  scope                = azurerm_key_vault.aj-KeyVault.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = azurerm_windows_virtual_machine.aj-vm1-abc.identity[0].principal_id
+}
+
+  /*access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
 
@@ -39,5 +48,4 @@ resource "azurerm_key_vault" "aj-KeyVault" {
       "Get",
       "List",
     ]
-  }
-}
+  }*/

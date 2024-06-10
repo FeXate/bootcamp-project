@@ -1,5 +1,5 @@
-data "azuread_service_principal" "principal" {
-  display_name = "EDU Terraform Automation"
+data "azuread_user" "principal" {
+  user_principal_name = "adam.jelassi_tietoevry.com#EXT#@tietoevryedu.onmicrosoft.com"
 }
 
 resource "random_password" "password" {
@@ -14,14 +14,16 @@ resource "azurerm_postgresql_flexible_server" "aj-postgreSQL-flex-abc" {
   location            = azurerm_resource_group.aj-rg-abc.location
   delegated_subnet_id           = azurerm_subnet.subnet2.id
   private_dns_zone_id           = azurerm_private_dns_zone.postgre_zone.id
+  administrator_login           = "adminuser"
+  administrator_password        = random_password.password.result
   version             = "16" 
   storage_mb          = 32768 # 32GB
   sku_name            = "GP_Standard_D4s_v3"
   public_network_access_enabled = false
   
   authentication {
-    active_directory_auth_enabled = true
-    password_auth_enabled = false
+    active_directory_auth_enabled = false
+    password_auth_enabled = true
     tenant_id                     = data.azurerm_client_config.current.tenant_id
   }
 
@@ -45,7 +47,7 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "en
   server_name         = azurerm_postgresql_flexible_server.aj-postgreSQL-flex-abc.name
   resource_group_name = azurerm_resource_group.aj-rg-abc.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
-  object_id           = data.azuread_service_principal.principal.object_id
-  principal_name      = data.azuread_service_principal.principal.display_name
-  principal_type      = "ServicePrincipal"
+  object_id           = data.azuread_user.principal.object_id
+  principal_name      = data.azuread_user.principal.user_principal_name
+  principal_type      = "User"
 }
